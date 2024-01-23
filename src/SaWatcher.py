@@ -6,7 +6,7 @@ class SaWatcher:
     def __init__(self, boat, api, period):
         self.boat = boat
         self.api = api
-        self.period = period
+        self.period = period*60
         self.nmea_server = None
 
     def start_monitoring(self, nmea_server=None):
