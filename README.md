@@ -1,5 +1,7 @@
 # SA2 Boat Watcher
 
+![alt text](doc/sa2-watcher-cover.png)
+
 ## About
 
 SA2 Boat Watcher is a collection of Python scripts designed to help Sailaway2 players monitor their boats efficiently. These scripts use game data to provide real-time updates and statistics about the status of your boats in Sailaway2.
