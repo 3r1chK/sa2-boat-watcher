@@ -84,7 +84,6 @@ class BoatPolar:
             for twa in range(181):  # For each TWA row
                 stw = self.polar_grid[twa][tws]
                 if stw > 0:
-                    print("TWA: %i, STW: %d" % (twa, stw))
                     if last_known_twa is not None and abs(last_known_twa-twa) > 1:
                         # Linear interpolation between last_known_twa and twa
                         self.linear_interpolation(tws, last_known_twa, twa)
