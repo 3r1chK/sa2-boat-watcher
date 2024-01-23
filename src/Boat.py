@@ -20,6 +20,8 @@ class Boat:
         # Aggiorna il BoatPolar con il nuovo log
         self.polar.update_from_log(new_log)
 
+        return new_log
+
     def save_polar_file(self):
         # Salva i dati aggiornati del polar file
         self.polar.save_to_file()

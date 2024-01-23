@@ -18,10 +18,10 @@ class SaWatcher:
             while True:
                 log = self.api.fetch_boat_data(self.boat)
                 if log:
-                    self.boat.add_log(log)
+                    b_log = self.boat.add_log(log)
                     self.boat.save_polar_file()
                     if self.nmea_server is not None:
-                        self.nmea_server.send_boatlog(log)
+                        self.nmea_server.send_boatlog(b_log)
                 time.sleep(self.period)
         except KeyboardInterrupt:
             # Compute interpolated values
