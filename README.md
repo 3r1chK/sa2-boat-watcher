@@ -29,7 +29,7 @@ SA2 Boat Watcher is a collection of Python scripts designed to help Sailaway2 pl
     ```bash 
     cd sa2-boat-watcher
     ```
-1. Clone the repository:
+1. Install Python requirements:
     ```bash 
     pip install -r requirements.txt
     ```
@@ -41,6 +41,13 @@ SA2 Boat Watcher is a collection of Python scripts designed to help Sailaway2 pl
     ```bash 
     python main.py
     ```
+
+## Future Developments
+
+* **SA2 GRIB Time Finder & Converter:** this tool selects a GRIB file that matches the current time and compares it with your boat's weather in SA2. Once aligned, it allows for the conversion of the GRIB file to match the SA2 timing.
+* **Race Route Diagram Generator:** a tool designed to create and modify race route diagrams.
+* **Web App:** a user-friendly web interface to access all the features of the _SA2 Boat Watcher_.
+
 
 ## Contributing
 
