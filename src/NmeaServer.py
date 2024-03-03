@@ -1,6 +1,7 @@
 # NmeaServer.py
 import socket
 import threading
+import pynmea2
 from datetime import datetime
 
 
@@ -69,7 +70,57 @@ class NmeaServer:
         nmea_message = self.generate_nmea_sentence(boat_log)
         self.broadcast_nmea_message(nmea_message)
 
+########################################################################################################################
+    @staticmethod
+    def convert_to_nmea_format(coordinate, coordinate_type):
+        """Converts latitude or longitude to NMEA format."""
+        degrees = int(coordinate)
+        minutes = (coordinate - degrees) * 60
+        return (
+            f"{degrees:02d}{minutes:07.4f}",
+            'N' if coordinate_type == 'latitude' and coordinate >= 0 else 'S'
+            if coordinate_type == 'latitude' else 'E' if coordinate >= 0 else 'W'
+        )
+
     def generate_nmea_sentence(self, boat_log):
+        # Convert latitude and longitude data to NMEA formats
+        lat, lat_dir = self.convert_to_nmea_format(boat_log.latitude, 'latitude')
+        lon, lon_dir = self.convert_to_nmea_format(boat_log.longitude, 'longitude')
+
+        # Create a list of NMEA sentences based on available data
+        nmea_sentences = []
+
+        # GPRMC - Recommended Minimum Specific GPS/TRANSIT Data
+        if hasattr(boat_log, 'sog') and hasattr(boat_log, 'cog') and hasattr(boat_log, 'date'):
+            date_str = self.get_date()  # Assuming this function returns a date string in ddmmyy format
+            time_str = '120000'  # Assuming a fixed time or you can modify to use actual time
+            gprmc = pynmea2.RMC('GP', 'RMC', (
+            time_str, 'A', lat, lat_dir, lon, lon_dir, str(boat_log.sog), str(boat_log.cog), date_str, '', ''))
+            nmea_sentences.append(str(gprmc))
+
+        # Manually created unsupported sentences
+        # Example: GPVTG, GPHDT, IIMWV, IIMWD
+        nmea_sentences.extend([
+            f'$GPVTG,{boat_log.cog},T,,M,{boat_log.sog},N,,K,A',
+            f'$GPHDT,{boat_log.hdg},T',
+            f'$IIMWV,{boat_log.awa},R,{boat_log.aws},N,A',
+            f'$IIMWV,{boat_log.twa},T,{boat_log.tws},N,A',
+            f'$IIMWD,,,{boat_log.twd},,,{boat_log.tws},N,,M'
+        ])
+
+        # Adding checksum to each sentence
+        for i in range(len(nmea_sentences)):
+            sentence = nmea_sentences[i]
+            if sentence.startswith('$'):
+                checksum = pynmea2.NMEASentence.calculate_checksum(sentence)
+                nmea_sentences[i] = f"{sentence}*{checksum}"
+
+        # Combine all sentences with line terminators
+        return '\r\n'.join(nmea_sentences) + '\r\n'
+
+########################################################################################################################
+
+    def generate_nmea_sentence_old(self, boat_log):
         # Convert latitude and longitude data to NMEA formats
         lat = self.convert_to_nmea_latitude(boat_log.latitude)
         lon = self.convert_to_nmea_longitude(boat_log.longitude)

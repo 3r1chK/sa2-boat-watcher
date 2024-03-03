@@ -2,7 +2,7 @@
 import configparser
 from src.NmeaServer import NmeaServer
 from src.SaWatcher import SaWatcher
-from src.SaApi import SaApi
+from src.SaUserBoatApi import SaUserBoatApi
 from src.Boat import Boat
 
 
@@ -16,7 +16,7 @@ def main():
     config = load_config("conf.ini")
 
     boat = Boat(config['Boat']['name'], config['Boat']['type'], config['Boat']['polar_file'])
-    api = SaApi(config['General']['username'], config['General']['key'], str(config['General']['url']))
+    api = SaUserBoatApi(config['General']['username'], config['General']['key'], str(config['General']['url']))
     watcher = SaWatcher(boat, api, int(config['General']['period']))
 
     if config['NmeaServer']['enabled']:

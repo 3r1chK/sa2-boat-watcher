@@ -2,7 +2,6 @@
 import csv
 import os
 from time import time
-
 from src.Utils import Utils
 
 
@@ -28,7 +27,7 @@ class BoatPolar:
     def add_data(self, tws, twa, boat_speed):
         # Converts speed in knots (rounded at 2nd decimal digit)
         boat_speed = round(Utils.meters_to_knots(boat_speed), 2)
-        tws = round(Utils.meters_to_knots(boat_speed), 2)
+        tws = round(Utils.meters_to_knots(tws), 2)
 
         # Round TWS and TWA to their closer integer values
         tws = round(tws)
@@ -70,8 +69,14 @@ class BoatPolar:
                             if 0 <= tws <= 80:
                                 self.polar_grid[twa][tws] = float(row[col_counter])
 
-    def save_to_file(self):
-        with open(self.polar_file, 'w', newline='') as file:
+    def save_to_original_file(self):
+        self.save_to_new_file(new_filename=self.polar_file)
+
+    def save_to_original_file_with_suffix(self, suffix: str):
+        self.save_to_new_file(new_filename=self.polar_file + "_" + suffix + ".pol")
+
+    def save_to_new_file(self, new_filename: str):
+        with open(new_filename, 'w', newline='') as file:    # TODO newline?
             writer = csv.writer(file)
             writer.writerow(["TWA/TWS"] + [i for i in range(81)])  # Writes TWS header
             for twa, speeds in enumerate(self.polar_grid):

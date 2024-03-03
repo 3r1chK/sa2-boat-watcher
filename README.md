@@ -1,6 +1,6 @@
 # SA2 Boat Watcher
 
-![alt text](doc/sa2-watcher-cover.png)
+![Banner](doc/sa2-watcher-cover.png)
 
 ## About
 
@@ -10,8 +10,10 @@ SA2 Boat Watcher is a collection of Python scripts designed to help Sailaway2 pl
 
 ## Features
 
-- **Polar files generation/manipulation**
-- **NMEA server**
+- **Polar files generation/manipulation;**
+- **SA2 GRIB Time Finder & Converter;**
+- **Race Route Diagram Generator;**
+- NMEA server (to be fixed).
 
 ## Getting Started
 ### Prerequisites
@@ -44,10 +46,8 @@ SA2 Boat Watcher is a collection of Python scripts designed to help Sailaway2 pl
 
 ## Future Developments
 
-* **SA2 GRIB Time Finder & Converter:** this tool selects a GRIB file that matches the current time and compares it with your boat's weather in SA2. Once aligned, it allows for the conversion of the GRIB file to match the SA2 timing.
-* **Race Route Diagram Generator:** a tool designed to create and modify race route diagrams.
 * **Web App:** a user-friendly web interface to access all the features of the _SA2 Boat Watcher_.
-
+* **Improved polar file generator** by using multiple boats
 
 ## Contributing
 

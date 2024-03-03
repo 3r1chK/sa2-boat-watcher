@@ -1,6 +1,7 @@
 # Boat.py
 from src.BoatPolar import BoatPolar
 from src.BoatLog import BoatLog
+from src.Utils import Utils
 
 
 class Boat:
@@ -24,7 +25,7 @@ class Boat:
 
     def save_polar_file(self):
         # Salva i dati aggiornati del polar file
-        self.polar.save_to_file()
+        self.polar.save_to_original_file_with_suffix(Utils.get_current_datetime_formatted())
 
     def compute_missing_values(self):
         self.polar.interpolate_twa()
