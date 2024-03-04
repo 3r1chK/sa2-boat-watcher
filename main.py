@@ -17,7 +17,7 @@ def main():
 
     boat = Boat(config['Boat']['name'], config['Boat']['type'], config['Boat']['polar_file'])
     api = SaUserBoatApi(config['General']['username'], config['General']['key'], str(config['General']['url']))
-    watcher = SaWatcher(boat, api, int(config['General']['period']))
+    watcher = SaWatcher(boat, api, config.getfloat('General', 'period'))
 
     if config['NmeaServer']['enabled']:
         watcher.start_monitoring(NmeaServer(config['NmeaServer']['host'], int(config['NmeaServer']['port'])))
