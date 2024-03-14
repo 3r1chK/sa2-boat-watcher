@@ -66,39 +66,45 @@
                 </a>
               </li>
               <li class="nav-item">
+                <a class="nav-link {{ 'active' if active_page == 'boats' else '' }}" href="{{ url_for('boats') }}" >
+                  <span data-feather="shopping-cart"></span>
+                  Boats
+                </a>
+              </li>
+              <li class="nav-item">
                 <a class="nav-link {{ 'active' if active_page == 'timeshift_detector' else '' }}" href="{{ url_for('timeshift_detector') }}" >
                   <span data-feather="file"></span>
                   Weather
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link {{ 'active' if active_page == 'routes' else '' }}" href="{{ url_for('routes') }}" >
                   <span data-feather="file-text"></span>
                   Routes
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <span data-feather="shopping-cart"></span>
-                  Boats
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link {{ 'active' if active_page == 'races' else '' }}" href="{{ url_for('races') }}" >
                   <span data-feather="users"></span>
                   Races
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link {{ 'active' if active_page == 'polars' else '' }}" href="{{ url_for('polars') }}" >
                   <span data-feather="bar-chart-2"></span>
                   Polars
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link {{ 'active' if active_page == 'alarms' else '' }}" href="{{ url_for('alarms') }}" >
                   <span data-feather="layers"></span>
                   Alarms
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link {{ 'active' if active_page == 'alarms' else '' }}" href="{{ url_for('alarms') }}" >
+                  <span data-feather="layers"></span>
+                  Voyages (todo)
                 </a>
               </li>
             </ul>
@@ -141,8 +147,9 @@
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
 
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-            {% block content %}{% endblock %}
-
+            <div class="container">
+              {% block content %}{% endblock %}
+            </div>
           </div>
 
         </main>

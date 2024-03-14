@@ -1,0 +1,56 @@
+{% extends "dashboard_base.html" %}
+
+{% block content %}
+
+<h1>Sailaway II Watcher - Dashboard Settings</h1>
+
+<div class="container mt-5">
+    <form id="settings-form">
+        <!-- Sailaway II Username -->
+        <div class="mb-3">
+            <label for="username" class="form-label">Sailaway II Username</label>
+            <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username" required>
+        </div>
+
+        <!-- API Key -->
+        <div class="mb-3">
+            <label for="apikey" class="form-label">API Key</label>
+            <div class="input-group">
+                <input type="password" class="form-control" id="apikey" name="apikey" placeholder="Enter your API key" required>
+                <button class="btn btn-outline-secondary" type="button" id="toggleApiKeyVisibility">
+                    <i data-feather="eye-off"></i>
+                </button>
+                </button>
+            </div>
+        </div>
+
+        <!-- Minimum Time Between API Calls -->
+        <div class="mb-3">
+            <label for="api-call-interval" class="form-label">Minimum Time Between API Calls (seconds)</label>
+            <input type="number" class="form-control" id="api-call-interval" name="api_call_interval" placeholder="Enter minimum time in seconds" required min="1">
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary">Update</button>
+    </form>
+</div>
+
+<!-- Script to toggle the visibility of the API key -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle visibility of the API key
+    const toggleButton = document.getElementById('toggleApiKeyVisibility');
+    toggleButton.addEventListener('click', function(e) {
+        const apiKeyInput = document.getElementById('apikey');
+        const isPasswordVisible = apiKeyInput.type === 'text';
+
+        apiKeyInput.type = isPasswordVisible ? 'password' : 'text';
+        toggleButton.innerHTML = isPasswordVisible ? '<i data-feather="eye-off"></i>' : '<i data-feather="eye"></i>';
+
+        // Re-initialize Feather icons after changing the icon
+        feather.replace();
+    });
+});
+</script>
+
+{% endblock %}
