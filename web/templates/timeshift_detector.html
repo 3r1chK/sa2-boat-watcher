@@ -1,0 +1,81 @@
+{% extends "dashboard_base.html" %}
+
+{% block content %}
+
+    <!-- Loading Indicator -->
+    <div id="loading">
+        <img id="loading-image" src="{{ url_for('static', filename='images/loading.gif') }}" alt="Loading..." />
+    </div>
+
+    <!-- Form box -->
+    <div class="form-box">
+        <h2>Upload your GRIB file</h2>
+
+        <form id="grib-upload-form" action="#" method="post" enctype="multipart/form-data">
+            <input type="file" name="grib_file">
+            <input type="submit" value="Upload">
+        </form>
+    </div>
+
+    <!-- JS scripts -->
+    <script>
+        window.doTheAjaxCall = function(obj) {
+            console.log("Here we're!");
+
+            let $form = $('#grib-upload-form');
+            let $loading = $('#loading');
+
+            // Disable the form elements and show the loading indicator
+            $form.find(':input').prop('disabled', true);
+            $loading.show();
+
+            let formData = new FormData(obj);
+            console.log("Here we're2!");
+
+            $.ajax({
+                url: '{{ url_for("detect_time_offset") }}',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    // Hide loading indicator
+                    $loading.hide();
+
+                    // Re-enable the form elements
+                    $form.find(':input').prop('disabled', false);
+
+                    // Handle success
+                    console.log(response)
+                    alert('Time offset detection executed successfully.');
+                },
+                error: function (xhr, status, error) {
+                    // Hide loading indicator
+                    $loading.hide();
+
+                    // Re-enable the form elements
+                    $form.find(':input').prop('disabled', false);
+
+                    // Handle error
+                    alert('Error: ' + xhr.responseText);
+                }
+            });
+        }
+
+    // jQuery to handle the form submission
+    $(document).ready(function() {
+        console.log("WE")
+
+        $('#grib-upload-form').on('submit', function(e) {
+            e.preventDefault();
+
+            console.log("Here we're! -1");
+
+            window.doTheAjaxCall(this);
+        });
+    });
+    </script>
+
+
+
+{% endblock %}
