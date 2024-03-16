@@ -3,6 +3,7 @@ from flask import request, jsonify, abort, Blueprint
 from web.controller.BoatService import BoatService
 from web.model.database import db
 from web.model.Boat import Boat
+# TODO: move b.l. to services!!
 
 
 boats_api = Blueprint('api_boats', __name__)
@@ -42,6 +43,7 @@ def update_boat(boat_id):
         abort(400)
 
     boat.name = request.json.get('name', boat.name)
+    boat.sa2verified = False
 
     db.session.commit()
     return jsonify(boat.to_dict())

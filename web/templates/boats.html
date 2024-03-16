@@ -73,17 +73,25 @@ $(document).ready(function() {
             type: 'GET',
             success: function(boats) {
                 $('#boatsTableBody').empty(); // Clear the table body
+
                 boats.forEach(function(boat) {
+                    let verificationDependentButtons = boat.sa2verified ?
+                       '<button class="btn btn-info btn-sm track-boat" data-id="${boat.id}">Track</button>' +
+                        '<button class="btn btn-info btn-sm boat-polars" data-id="${boat.id}">Polars</button>'
+                        :
+                       `<button class="btn btn-success btn-sm verify-boat" data-id="${boat.id}">Verify</button>`;
                     $('#boatsTableBody').append(
                         `<tr>
                             <td>${boat.name}</td>
                             <td>${boat.boat_type}</td>
-                            <td>${boat.sa2verified ? 'Yes' : 'No'}</td>
+                            <td>${boat.sa2verified ?
+                                        '<div class="btn btn-success btn-sm">Yes</div>'
+                            :
+                                        '<div class="btn btn-danger btn-sm">No</div>'
+                            }</td>
                             <td>
-                                <button class="btn btn-success btn-sm verify-boat" data-id="${boat.id}">Verify</button>
-                                <button class="btn btn-info btn-sm track-boat" data-id="${boat.id}">Track</button>
-                                <button class="btn btn-info btn-sm boat-polars" data-id="${boat.id}">Polars</button>
                                 <button class="btn btn-warning btn-sm edit-boat" data-id="${boat.id}">Edit</button>
+                                ${verificationDependentButtons}
                                 <button class="btn btn-danger btn-sm delete-boat" data-id="${boat.id}">Delete</button>
                             </td>
                         </tr>`
