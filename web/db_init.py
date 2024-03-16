@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = '/tmp/'  # Ensure this directory exists
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB limit for uploads
 config = configparser.ConfigParser()
-config.read('web_conf.ini')     # TODO: replace with Flask app config!
+config.read('web/web_conf.ini')     # TODO: replace with Flask app config!
 
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///" + config['Database'].get("sqlite3_path")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

@@ -4,7 +4,11 @@ from flask import Flask, render_template, jsonify, request, redirect, url_for
 from werkzeug.utils import secure_filename
 from src.SaGetWeatherApi import SaGetWeatherApi
 from src.TimeOffsetDetectorByLocation import TimeOffsetDetectorByLocation
+from web.controller.ConfigService import ConfigService
+from web.api.boats import boats_api
 from web.model.database import db
+from web.model.Sail import Sail
+from web.model.BoatType import BoatType
 from web.model.Boat import Boat
 
 
@@ -47,7 +51,7 @@ def create_app(first_time=False):
     return new_app
 
 
-app = create_app(True)
+app = create_app(False)
 
 
 # Webapp routes
@@ -56,9 +60,30 @@ def index():
     return render_template('index.html')
 
 
-@app.route('/home')
+@app.route('/home', methods=['GET', 'POST'])
 def home():
-    return render_template('home.html', active_page='home')
+    if request.method == 'POST':
+        # Save settings!!
+        # Extract form data
+        username = request.form.get('username')
+        api_key = request.form.get('apikey')
+        api_call_interval = request.form.get('api_call_interval')
+        # TODO input filters!
+
+        # Here, implement the logic to save or update settings.
+        ConfigService.set('username', username)
+        ConfigService.set('api_key', api_key)
+        ConfigService.set('api_call_interval', api_call_interval)
+
+        # Return a JSON response indicating success or failure
+        return jsonify({'status': 'success', 'message': 'Settings updated successfully.'})
+
+    form_data = {
+        'username': ConfigService.get_or_empty_string('username'),
+        'apikey': ConfigService.get_or_empty_string('api_key'),
+        'api_call_interval': ConfigService.get_or_empty_string('api_call_interval'),
+    }
+    return render_template('home.html', form_data=form_data, active_page='home')
 
 
 @app.route('/timeshift_detector', methods=['GET'])
@@ -73,10 +98,6 @@ def routes():
 
 @app.route('/boats', methods=['GET'])
 def boats():
-    # Create a new boat
-    new_boat = Boat(name='Sailaway', boat_type="24 banane")
-    db.session.add(new_boat)
-    db.session.commit()
     return render_template('boats.html', active_page='boats')
 
 
@@ -116,6 +137,10 @@ def detect_time_offset():
             return jsonify({"success": True, "message": "Time offset detection executed successfully."}), 200
         except Exception as e:
             return jsonify({"success": False, "message": str(e)}), 500
+
+
+# Register APIs
+app.register_blueprint(boats_api, url_prefix='/api')
 
 
 if __name__ == '__main__':

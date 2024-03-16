@@ -8,16 +8,188 @@
     Register your boat; after registration, you can begin tracking its movements and start developing its polar file.
 </p>
 
-<table>
-    <tbody>
-    <tr>
-        <td>Comfortably Numb</td>
-        <td>Catamaran</td>
-        <td>N 1.220523°, W 12.33456°</td>
-        <td>Alarms</td>
-        <td>Polars</td>
-        <td>Tracking</td>
-    </tr>
+<!-- Boat Registration Form -->
+<div class="mb-3">
+    <label for="boatName" class="form-label">Boat Name</label>
+    <input type="text" class="form-control" id="boatName" placeholder="Enter boat name">
+
+    <button id="registerBoat" class="btn btn-primary mt-3">Register Boat</button>
+</div>
+
+<!-- Boats Table -->
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>SA2 verified</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="boatsTableBody">
+        <!-- Boats will be added here by JavaScript -->
     </tbody>
 </table>
+
+<!-- Edit Boat Modal -->
+<div class="modal fade" id="editBoatModal" tabindex="-1" aria-labelledby="editBoatModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editBoatModalLabel">Edit Boat</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editBoatId">
+                <div class="mb-3">
+                    <label for="editBoatName" class="form-label">Boat Name</label>
+                    <input type="text" class="form-control" id="editBoatName" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveEditBoat">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    // Define the URLs as variables using `url_for`
+    let boatsUrl = "{{ url_for('api_boats.get_boats') }}";
+    let createBoatUrl = "{{ url_for('api_boats.create_boat') }}";
+    // Note: For dynamic URLs, like the delete URL, we will handle them differently
+
+    // Function to get all boats and display them
+    function refreshBoats() {
+        $.ajax({
+            url: boatsUrl,
+            type: 'GET',
+            success: function(boats) {
+                $('#boatsTableBody').empty(); // Clear the table body
+                boats.forEach(function(boat) {
+                    $('#boatsTableBody').append(
+                        `<tr>
+                            <td>${boat.name}</td>
+                            <td>${boat.boat_type}</td>
+                            <td>${boat.sa2verified ? 'Yes' : 'No'}</td>
+                            <td>
+                                <button class="btn btn-success btn-sm verify-boat" data-id="${boat.id}">Verify</button>
+                                <button class="btn btn-info btn-sm track-boat" data-id="${boat.id}">Track</button>
+                                <button class="btn btn-info btn-sm boat-polars" data-id="${boat.id}">Polars</button>
+                                <button class="btn btn-warning btn-sm edit-boat" data-id="${boat.id}">Edit</button>
+                                <button class="btn btn-danger btn-sm delete-boat" data-id="${boat.id}">Delete</button>
+                            </td>
+                        </tr>`
+                    );
+                });
+            }
+        });
+    }
+    // Register boat function with updated URL
+    $('#registerBoat').click(function() {
+        const boatName = $('#boatName').val();
+
+        $.ajax({
+            url: createBoatUrl,
+            method: 'POST',
+            contentType: 'application/json', // Set the content type to application/json
+            data: JSON.stringify({ name: boatName }), // Stringify the payload
+            success: function(response) {
+                alert('Boat registered successfully');
+                refreshBoats(); // Refresh the list of boats
+            },
+            error: function(xhr, status, error) {
+                alert('Error registering boat: ' + xhr.responseText);
+            }
+        });
+    });
+
+    // Delete function needs to insert the ID into the URL
+    $(document).on('click', '.delete-boat', function() {
+        const boatId = $(this).data('id');
+        let deleteBoatUrl = "{{ url_for('api_boats.delete_boat', boat_id=-1) }}".replace('-1', boatId);
+
+        $.ajax({
+            url: deleteBoatUrl,
+            method: 'DELETE',
+            success: function() {
+                alert('Boat deleted successfully');
+                refreshBoats();
+            },
+            error: function() {
+                alert('Error deleting boat');
+            }
+        });
+    });
+
+    // Function to show the edit modal with current boat data
+    $(document).on('click', '.edit-boat', function() {
+        const boatId = $(this).data('id');
+        var getBoatUrl = "{{ url_for('api_boats.get_boat', boat_id=-1) }}".replace('-1', boatId);
+
+        $.get(getBoatUrl, function(boat) {
+            $('#editBoatId').val(boat.id);
+            $('#editBoatName').val(boat.name);
+            $('#editBoatType').val(boat.boat_type);
+            $('#editBoatModal').modal('show');
+        });
+    });
+
+    // Function to handle the save changes button on the edit modal
+    $('#saveEditBoat').click(function() {
+        const boatId = $('#editBoatId').val();
+        var updateBoatUrl = "{{ url_for('api_boats.update_boat', boat_id=-1) }}".replace('-1', boatId);
+
+        $.ajax({
+            url: updateBoatUrl,
+            method: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                name: $('#editBoatName').val(),
+                boat_type: $('#editBoatType').val()
+            }),
+            success: function() {
+                $('#editBoatModal').modal('hide');
+                alert('Boat updated successfully');
+                refreshBoats();
+            },
+            error: function() {
+                alert('Error updating boat');
+            }
+        });
+    });
+
+    // Add click event handler for the Verify button
+    $(document).on('click', '.verify-boat', function() {
+        let boatId = $(this).data('id');
+        var verifyBoatUrl = "{{ url_for('api_boats.verify_boat', boat_id=-1) }}".replace('-1', boatId);
+
+        $.ajax({
+            url: verifyBoatUrl,
+            method: 'PUT',
+            success: function(response) {
+                if(response.success) {
+                    alert('Boat verified successfully');
+                } else {
+                    alert('Could not verify boat');
+                }
+                refreshBoats(); // Refresh the list to show updated verification status
+            },
+            error: function() {
+                alert('Error verifying boat');
+            }
+        });
+    });
+
+    // Initial call to populate the table with boats
+    refreshBoats();
+});
+</script>
 {% endblock %}
